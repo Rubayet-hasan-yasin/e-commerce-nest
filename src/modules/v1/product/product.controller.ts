@@ -96,16 +96,13 @@ export class ProductController {
       properties: {
         name: { type: 'string', example: 'Fresh milk' },
         localName: { type: 'string', example: 'দুধ' },
-        category: { type: 'string', example: 2 },
+        category: { type: 'string', example: 1 },
+        productCode: { type: 'string', example: '234234' },
         description: {
           type: 'string',
           example: JSON.stringify('<p><br></p><p>dxgys</p>'),
         },
         keyword: { type: 'string', example: 'Bangladeshi, Best, Fresh milk' },
-        youtubeLink: {
-          type: 'string',
-          example: 'https://youtube.com/video123',
-        },
         sizes: {
           type: 'string',
           example: JSON.stringify([
