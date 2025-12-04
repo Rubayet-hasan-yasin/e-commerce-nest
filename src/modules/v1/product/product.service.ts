@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -16,6 +17,7 @@ import { join } from 'path';
 import { existsSync, unlinkSync } from 'fs';
 import { ProductCategory } from './entities/ProductCategory.entity';
 import { Env } from 'src/config/env';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class ProductService {
@@ -26,6 +28,7 @@ export class ProductService {
     private readonly categoryRepository: Repository<ProductCategory>,
     private readonly fileUploadService: FileUploadService,
     private readonly dataSource: DataSource,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async create(productData: CreateProductDto, images: Express.Multer.File[]) {
@@ -184,6 +187,75 @@ export class ProductService {
     }
 
     return mapped;
+  }
+
+  async findAllWithRedis(page?: number, limit?: number, categoryId?: number) {
+    const cacheKey = `products:${page ?? 0}:${limit ?? 0}:${categoryId ?? 0}`;
+
+    console.log('Fetching products with cache key:', cacheKey);
+
+    // Try to get from cache first
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const take = limit ?? 0;
+    const skip = page && limit ? (page - 1) * limit : 0;
+
+    const discountCategory = await this.categoryRepository.findOne({
+      where: { name: ILike('discount') },
+    });
+
+    const discountCategoryId = discountCategory?.id ?? 0;
+    const isDiscountCategory = categoryId === discountCategoryId;
+
+    const query = this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.sizes', 'size')
+      .leftJoinAndSelect('product.category', 'category')
+      .where('product.isPublic = :isPublic', { isPublic: true })
+      .orderBy('product.createdAt', 'ASC');
+
+    if (isDiscountCategory) {
+      query.andWhere('size.discountPrice < size.price');
+    } else if (categoryId) {
+      query.andWhere('category.id = :categoryId', { categoryId });
+    }
+
+    if (page && limit) {
+      query.skip(skip).take(take);
+    }
+
+    const [products, total] =
+      page && limit
+        ? await query.getManyAndCount()
+        : [await query.getMany(), 0];
+
+    const mapped = products.map((product) => ({
+      ...product,
+      category: {
+        id: product.category.id,
+        name: product.category.name,
+      },
+      image:
+        product.status === 1
+          ? product.image.map((img) => `${Env.DOMAIN}/image/${img}`)
+          : product.watermarkedImage?.map(
+              (img) => `${Env.DOMAIN}/image/${img}`,
+            ),
+    }));
+
+    const result =
+      page && limit ? { total, page, limit, data: mapped } : mapped;
+
+    // Store result in cache for 60 seconds
+    await this.cacheManager.set(cacheKey, result, 60);
+
+    const keys = this.cacheManager.stores.keys();
+    console.log('Redis keys:', keys);
+
+    return result;
   }
 
   async findOne(id: number) {

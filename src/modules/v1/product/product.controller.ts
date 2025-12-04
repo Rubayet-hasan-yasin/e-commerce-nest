@@ -40,7 +40,7 @@ export class ProductController {
     @Query('limit') limit?: number,
     @Query('categoryId') categoryId?: number,
   ) {
-    return this.productService.findAll(page, limit, categoryId);
+    return this.productService.findAllWithRedis(page, limit, categoryId);
   }
 
   @Get('featured-products')

@@ -19,6 +19,9 @@ import { OrderModule } from './modules/v1/order/order.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { DashboardModule } from './modules/v1/dashboard/dashboard.module';
 import { CartModule } from './modules/v1/cart/cart.module';
+import * as redisStore from 'cache-manager-ioredis';
+import { Env } from './config/env';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -45,9 +48,21 @@ import { CartModule } from './modules/v1/cart/cart.module';
     OrderModule,
     DashboardModule,
     CartModule,
+    CacheModule.register({
+      ttl: 60,
+      max: 100,
+      isGlobal: true,
+      // store: redisStore,
+      // host: Env.REDIS_HOST,
+      // port: Env.REDIS_PORT,
+      // password: Env.REDIS_PASSWORD,
+      // ttl: 60,
+      // isGlobal: true,
+    }),
   ],
   controllers: [],
   providers: [],
+  exports: [CacheModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
