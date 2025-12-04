@@ -1,353 +1,276 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# E-Commerce Backend API
 
-<p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+A production-ready e-commerce backend built with NestJS, TypeORM, and PostgreSQL. Features versioned REST APIs, dual authentication systems (admin & customer), comprehensive order management, and automated image processing with Sharp.
 
-<p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-<a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-<a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-<a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
+## ✨ Key Features
 
----
+### Authentication & Authorization
+- **Admin Auth** - JWT-based authentication for admin users
+- **Customer Auth** - Separate customer authentication with OTP support (email/phone)
+- **Role-based Access** - Guards and decorators for route protection
+- **Session Management** - Cookie-based sessions with secure token handling
 
-# E-Commerce Backend
+### E-Commerce Core
+- **Product Management** - Products with categories, sizes, variants, and stock tracking
+- **Shopping Cart** - Persistent cart system with session support
+- **Order Processing** - Complete order lifecycle (pending → processing → shipped → delivered)
+- **Payment Tracking** - Payment entity with multiple payment method support
+- **Address Management** - Customer shipping addresses with CRUD operations
+- **Shipping Costs** - Dynamic shipping cost calculation
 
-A production-ready backend system for e-commerce platforms, built with NestJS, TypeORM, and PostgreSQL. It includes secure authentication, user and product management, and environment-based configuration with SSL-ready database connections.
+### Content & Marketing
+- **Banner Management** - Promotional banners for homepage/categories
+- **About Pages** - CMS-like content management
+- **Contact Forms** - Customer inquiry handling
+- **Dashboard Stats** - Admin analytics and KPIs
 
----
+### File Management
+- **Image Upload** - Single and multiple file uploads
+- **Automatic Compression** - Sharp-based image optimization
+- **Watermarking** - Automated watermark application
+- **Three Storage Tiers** - Original, compressed, and watermarked versions
 
-## 🚀 Features
+### Infrastructure
+- **API Versioning** - URI-based versioning (v1)
+- **Caching** - Redis integration (configurable)
+- **CORS** - Configured for cross-origin requests
+- **Swagger Docs** - Auto-generated API documentation at `/api/v1`
+- **Database Migrations** - TypeORM migrations with pg_trgm extension
+- **Docker Support** - Multi-stage Dockerfile included
+- **Request Logging** - Custom middleware for all routes
 
-- Modular NestJS architecture
-- PostgreSQL + TypeORM integration
-- JWT-based authentication and authorization
-- Secure password hashing with bcrypt
-- Static file serving
-- Swagger API documentation
-- Image handling with `sharp`
-- E2E and unit testing with Jest
-- Database migrations
-- Environment-based configuration
-- SSL-enabled database support
-
----
-
-## 📦 Project Setup
+## 🚀 Quick Start
 
 ```bash
-git clone https://your-repo-url.git
-cd e-commerce
+# Clone repository
+git clone <your-repo-url>
+cd e-commerce-nest
+
+# Install dependencies
 npm install
-```
 
-## 🔐 Environment Variables
+# Configure environment
+# Create .env file with required variables (see below)
 
-Create a .env file in the root directory and include the following values:
-
-```bash
-NODE_ENV=development
-PORT=8000
-DB_HOST=localhost
-DB_PORT=5234
-DB_USERNAME=pg
-DB_PASSWORD=123456
-DB_NAME=defaultdb
-JWT_SECRET=your_dev_secret_key
-JWT_EXPIRED=24h
-SALT_ROUNDS=10
-DOMAIN=http://localhost:8000
-AUTH_OTP_EXPIRED=300
-DATABASE_SSL_CA=SSL Certificate(Optional if requerded)
-```
-
-🛡️ SSL Certificate (for DB) (Optional)
-
----
-
-## 🧱 Database Migrations ()
-
-This migration enables the pg_trgm extension in PostgreSQL, which is very useful for fuzzy text search (e.g., similarity matching, autocomplete, etc.).
-
-```
-# Run migrations
+# Run database migrations
 npm run migration:run
 
-# Generate migration
-npm run migration:generate -- -n YourMigrationName
+# Start development server
+npm run start:dev
 ```
 
----
+Server will start at `http://localhost:3003` (default) with Swagger docs at `http://localhost:3003/api/v1`
 
-## 🛠️ Compile and Run the Project
+## 🔐 Environment Configuration
 
+Create a `.env` file in the root directory:
+
+```env
+# Application
+NODE_ENV=development
+PORT=3003
+DOMAIN=http://localhost:3003
+
+# Database (PostgreSQL)
+DATABASE_URL=postgresql://user:pass@host:port/dbname  # Optional
+DB_HOST=localhost
+DB_PORT=5050
+DB_USERNAME=postgres
+DB_PASSWORD=yourpassword
+DB_NAME=ecommerce_db
+DATABASE_SSL_CA=  # SSL certificate path (optional for secure connections)
+
+# JWT Authentication
+JWT_SECRET=your_super_secret_key_change_in_production
+JWT_EXPIRED=24h
+
+# Security
+SALT_ROUNDS=10
+API_KEY=your_api_key  # Optional for additional API security
+
+# OTP Configuration
+AUTH_OTP_EXPIRED=300  # OTP expiration in seconds (5 minutes)
+
+# Redis Cache (Optional - currently disabled in config)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+
+# Email Configuration (for OTP/notifications)
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-email-password
+RECIPIENT_EMAIL=admin@example.com
 ```
-# Start in development
+
+## 📦 Database Setup
+
+```bash
+# Run pending migrations
+npm run migration:run
+
+# Generate new migration after entity changes
+npm run migration:generate -- -n DescriptiveMigrationName
+
+# Note: Migration files are stored in src/migrations/
+```
+
+**Important:** The project includes a migration to enable PostgreSQL's `pg_trgm` extension for fuzzy text search and autocomplete features.
+
+## 🛠️ Development
+
+```bash
+# Development mode with hot reload
 npm run start:dev
 
-# Watch mode
+# Debug mode
 npm run start:debug
 
-# Production build and run
+# Production build
 npm run build
 npm run start:prod
+
+# Code quality
+npm run lint        # ESLint
+npm run format      # Prettier
+
+# Testing
+npm run test        # Unit tests
+npm run test:watch  # Watch mode
+npm run test:cov    # Coverage report
+npm run test:e2e    # End-to-end tests
 ```
 
-## 🧪 Run Tests
+## 🐳 Docker Deployment
 
-```
-# Unit tests
-npm run test
+```bash
+# Build image
+docker build -t ecommerce-api .
 
-# End-to-end tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
+# Run container
+docker run -p 3000:3000 --env-file .env ecommerce-api
 ```
 
-## 📜 Scripts
+The Dockerfile uses multi-stage builds for optimized production images.
 
----
-
-| Script             | Description                 |
-| ------------------ | --------------------------- |
-| start              | Start app                   |
-| start:dev          | Start with watch mode (dev) |
-| start:prod         | Run production build        |
-| build              | Build the app               |
-| lint               | Run ESLint                  |
-| format             | Format code with Prettier   |
-| test               | Run unit tests              |
-| test:e2e           | Run E2E tests               |
-| test:cov           | Coverage report             |
-| migration:run      | Apply database migrations   |
-| migration:generate | Generate new migration      |
-
-# 📂 Project Structure
+## 📁 Project Structure
 
 ```
-├───src
-│   │   app.module.ts
-│   │   data-source.ts
-│   │   main.ts
-│   │
-│   ├───about
-│   │   │   about.controller.spec.ts
-│   │   │   about.controller.ts
-│   │   │   about.module.ts
-│   │   │   about.service.spec.ts
-│   │   │   about.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-about.dto.ts
-│   │   │       update-about.dto.ts
-│   │   │
-│   │   └───entities
-│   │           about.entity.ts
-│   │
-│   ├───address
-│   │   │   address.controller.spec.ts
-│   │   │   address.controller.ts
-│   │   │   address.module.ts
-│   │   │   address.service.spec.ts
-│   │   │   address.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-address.dto.ts
-│   │   │       update-address.dto.ts
-│   │   │
-│   │   └───entities
-│   │           address.entity.ts
-│   │
-│   ├───auth
-│   │   │   auth.controller.spec.ts
-│   │   │   auth.controller.ts
-│   │   │   auth.module.ts
-│   │   │   auth.service.spec.ts
-│   │   │   auth.service.ts
-│   │   │   customer-auth.controller.ts
-│   │   │   customer-auth.service.ts
-│   │   │   otp.controller.ts
-│   │   │   otp.service.ts
-│   │   │
-│   │   ├───decorators
-│   │   │       get-user.decorator.ts
-│   │   │       public.decorator.ts
-│   │   │       roles.decorator.ts
-│   │   │
-│   │   ├───dto
-│   │   │       login-with-otp.dto.ts
-│   │   │       login.dto.ts
-│   │   │       register.dto.ts
-│   │   │       reset-password.dto.ts
-│   │   │       send-otp.dto.ts
-│   │   │       verify-otp.dto.ts
-│   │   │
-│   │   ├───entities
-│   │   │       auth.entity.ts
-│   │   │       auth.otp.entity.ts
-│   │   │
-│   │   ├───guards
-│   │   │       jwt-auth.guard.ts
-│   │   │       roles.guard.ts
-│   │   │
-│   │   └───strategies
-│   │           jwt.strategy.ts
-│   │
-│   ├───banner
-│   │   │   banner.controller.spec.ts
-│   │   │   banner.controller.ts
-│   │   │   banner.module.ts
-│   │   │   banner.service.spec.ts
-│   │   │   banner.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-banner.dto.ts
-│   │   │
-│   │   └───entities
-│   │           banner.entity.ts
-│   │
-│   ├───config
-│   │       database.config.ts
-│   │       env.ts
-│   │
-│   ├───contact
-│   │   │   contact.controller.spec.ts
-│   │   │   contact.controller.ts
-│   │   │   contact.module.ts
-│   │   │   contact.service.spec.ts
-│   │   │   contact.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-contact.dto.ts
-│   │   │       update-contact.dto.ts
-│   │   │
-│   │   └───entities
-│   │           contact.entity.ts
-│   │
-│   ├───customer
-│   │   │   customer.controller.spec.ts
-│   │   │   customer.controller.ts
-│   │   │   customer.module.ts
-│   │   │   customer.service.spec.ts
-│   │   │   customer.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-customer.dto.ts
-│   │   │       update-customer.dto.ts
-│   │   │
-│   │   └───entities
-│   │           customer.entity.ts
-│   │
-│   ├───dashboard
-│   │   │   dashboard.controller.spec.ts
-│   │   │   dashboard.controller.ts
-│   │   │   dashboard.module.ts
-│   │   │   dashboard.service.spec.ts
-│   │   │   dashboard.service.ts
-│   │   │
-│   │   └───dto
-│   │           dashboard-card.dto.ts
-│   │
-│   ├───file-upload
-│   │       file-upload.controller.spec.ts
-│   │       file-upload.controller.ts
-│   │       file-upload.module.ts
-│   │       file-upload.service.spec.ts
-│   │       file-upload.service.ts
-│   │
-│   ├───helpers
-│   │       bcrypt.helper.ts
-│   │       helper.module.ts
-│   │       jwt.helper.ts
-│   │
-│   ├───interface
-│   │       ProductInput.interface.ts
-│   │       SizeInput.interface.ts
-│   │       user-info.type.ts
-│   │
-│   ├───middleware
-│   │       logger.middleware.ts
-│   │
-│   ├───migrations
-│   │       1750652326871-EnablePgTrgmExtension.ts
-│   │
-│   ├───order
-│   │   │   order.controller.spec.ts
-│   │   │   order.controller.ts
-│   │   │   order.module.ts
-│   │   │   order.service.spec.ts
-│   │   │   order.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-order-item.dto.ts
-│   │   │       create-order.dto.ts
-│   │   │       customer.dto.ts
-│   │   │       update-order-status.dto.ts
-│   │   │
-│   │   └───entities
-│   │           order-item.entity.ts
-│   │           order.entity.ts
-│   │           payment.entity.ts
-│   │
-│   ├───product
-│   │   │   category.controller.ts
-│   │   │   category.service.ts
-│   │   │   product.controller.spec.ts
-│   │   │   product.controller.ts
-│   │   │   product.module.ts
-│   │   │   product.service.spec.ts
-│   │   │   product.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-category.dto.ts
-│   │   │       create-product.dto.ts
-│   │   │       update-category.dto.ts
-│   │   │       update-product.dto.ts
-│   │   │
-│   │   └───entities
-│   │           product.entity.ts
-│   │           ProductCategory.entity.ts
-│   │           size.entity.ts
-│   │
-│   ├───shipping-cost
-│   │   │   shipping-cost.controller.spec.ts
-│   │   │   shipping-cost.controller.ts
-│   │   │   shipping-cost.module.ts
-│   │   │   shipping-cost.service.spec.ts
-│   │   │   shipping-cost.service.ts
-│   │   │
-│   │   ├───dto
-│   │   │       create-shipping-cost.dto.ts
-│   │   │       update-shipping-cost.dto.ts
-│   │   │
-│   │   └───entities
-│   │           shipping-cost.entity.ts
-│   │
-│   └───user
-│       │   user.controller.spec.ts
-│       │   user.controller.ts
-│       │   user.module.ts
-│       │   user.service.spec.ts
-│       │   user.service.ts
-│       │
-│       ├───dto
-│       │       createUser.dto.ts
-│       │
-│       └───entities
-│               user.entity.ts
-├───test
-└───uploads
-    ├───compressed
-    ├───orginal
-    └───watermarked
+e-commerce-nest/
+├── src/
+│   ├── modules/
+│   │   ├── v1/                     # API Version 1 modules
+│   │   │   ├── auth/               # Authentication & authorization
+│   │   │   │   ├── auth.controller.ts      # Admin login/register/logout
+│   │   │   │   ├── customer-auth.controller.ts  # Customer auth with OTP
+│   │   │   │   ├── otp.controller.ts       # OTP send/verify endpoints
+│   │   │   │   ├── guards/         # JWT & Role guards
+│   │   │   │   ├── strategies/     # Passport JWT strategy
+│   │   │   │   └── decorators/     # Custom decorators (@GetUser, @Public, @Roles)
+│   │   │   ├── user/               # Admin user management
+│   │   │   ├── customer/           # Customer profiles & management
+│   │   │   ├── product/            # Products, categories, sizes
+│   │   │   ├── order/              # Orders, order items, payments
+│   │   │   ├── cart/               # Shopping cart operations
+│   │   │   ├── address/            # Customer shipping addresses
+│   │   │   ├── banner/             # Promotional banners
+│   │   │   ├── contact/            # Contact form submissions
+│   │   │   ├── dashboard/          # Admin analytics & stats
+│   │   │   ├── about/              # About page content
+│   │   │   └── shipping-cost/      # Shipping cost configuration
+│   │   └── file-upload/            # Image upload & processing service
+│   ├── config/
+│   │   ├── database.config.ts      # TypeORM configuration
+│   │   └── env.ts                  # Environment variables mapping
+│   ├── helpers/
+│   │   ├── bcrypt.helper.ts        # Password hashing utilities
+│   │   └── jwt.helper.ts           # JWT token utilities
+│   ├── middleware/
+│   │   └── logger.middleware.ts    # Request logging
+│   ├── migrations/                 # Database migration files
+│   ├── interface/                  # TypeScript interfaces & types
+│   ├── app.module.ts               # Root application module
+│   ├── main.ts                     # Application entry point
+│   └── data-source.ts              # TypeORM data source config
+├── uploads/                        # File storage directory
+│   ├── original/                   # Original uploaded images
+│   ├── compressed/                 # Compressed versions
+│   └── watermarked/                # Watermarked versions
+├── test/                           # E2E test files
+├── Dockerfile                      # Multi-stage Docker build
+├── docker-compose.yml              # Docker Compose configuration (if exists)
+└── package.json
 ```
+
+## 🔌 API Endpoints Overview
+
+All endpoints are prefixed with `/v1` for versioning.
+
+### Authentication
+- `POST /v1/auth/login` - Admin login
+- `POST /v1/auth/register` - Admin registration
+- `POST /v1/auth/logout` - Logout (clear tokens)
+- `POST /v1/auth/customer/login` - Customer login (traditional)
+- `POST /v1/auth/customer/login/otp` - Customer login with OTP
+- `POST /v1/auth/customer/reset-password` - Password reset
+- `POST /v1/auth/otp/send` - Send OTP
+- `POST /v1/auth/otp/verify` - Verify OTP
+
+### Products & Categories
+- Products: Full CRUD operations
+- Categories: Hierarchical category management
+- Sizes: Product size variants with stock tracking
+
+### Orders & Cart
+- Cart operations (add, update, remove items)
+- Order creation and status management
+- Payment tracking
+
+### Admin Features
+- Dashboard statistics
+- User management
+- Content management (banners, about pages)
+- Shipping cost configuration
+
+**Full API documentation available at:** `http://localhost:3003/api/v1` (Swagger UI)
+
+## 🧰 Tech Stack
+
+| Category | Technologies |
+|----------|-------------|
+| **Framework** | NestJS 11 |
+| **Language** | TypeScript 5.8 |
+| **Database** | PostgreSQL with TypeORM 0.3 |
+| **Authentication** | Passport.js + JWT |
+| **Validation** | class-validator, class-transformer |
+| **File Processing** | Sharp (image compression/watermarking) |
+| **Caching** | Redis with cache-manager-ioredis (optional) |
+| **Email** | Nodemailer |
+| **Security** | bcrypt, cookie-parser, CORS |
+| **Documentation** | Swagger/OpenAPI |
+| **Testing** | Jest, Supertest |
+| **Code Quality** | ESLint, Prettier |
+| **Build Tools** | SWC (faster TypeScript compilation) |
+
+## 📝 Development Notes
+
+### Image Upload Flow
+1. Upload to `uploads/original/`
+2. Automatic compression → `uploads/compressed/`
+3. Watermark application → `uploads/watermarked/`
+4. Files served via static route `/image/*`
+
+### Authentication Flow
+- **Admin:** JWT tokens with role-based guards
+- **Customer:** Separate auth system with optional OTP verification
+- Global JWT guard with `@Public()` decorator for open routes
+
+### Database Extensions
+- **pg_trgm:** Enabled for fuzzy text search and similarity matching in product searches
+
+### Caching Strategy
+- Redis configuration available but currently disabled
+- In-memory cache active (60s TTL, max 100 items)
+- Enable Redis by uncommenting config in `app.module.ts`
+
+
+**Built with ❤️ using NestJS**
